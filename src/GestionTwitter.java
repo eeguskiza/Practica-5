@@ -7,7 +7,7 @@ public class GestionTwitter {
 
 	public static void main(String[] args) {
 		try {
-			String fileName = "/Users/erikeguskiza/data.csv";
+			String fileName = "data2.csv";
 			CSV.processCSV( new File( fileName ) );
 		} catch (Exception e) {
 			e.printStackTrace();
