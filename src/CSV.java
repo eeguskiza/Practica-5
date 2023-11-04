@@ -53,6 +53,7 @@ public class CSV {
 			    	} else {
 			    		if (!l.isEmpty())
 			    			procesaLineaDatos( l );
+							procesaLineaDatosPorNick( l );
 			    	}
 		    	} catch (StringIndexOutOfBoundsException e) {
 		    		/* if (LOG_CONSOLE_CSV) */ System.err.println( "\tError: " + e.getMessage() );
@@ -237,6 +238,42 @@ public class CSV {
 			System.err.println("Error procesando la línea de datos: " + e.getMessage());
 		}
 	}
+
+	private static void procesaLineaDatosPorNick(ArrayList<Object> datos) {
+		if (datos == null || datos.size() < 10) {
+			System.err.println("Datos insuficientes para crear un UsuarioTwitter por nick");
+			return;
+		}
+		try {
+			String id = (String) datos.get(0);
+			String screenName = (String) datos.get(1);
+			@SuppressWarnings("unchecked") // Cast sin comprobación, se asume que es seguro
+			ArrayList<String> tags = (ArrayList<String>) datos.get(2);
+			String avatar = (String) datos.get(3);
+			Long followersCount = (Long) datos.get(4);
+			Long friendsCount = (Long) datos.get(5);
+			String lang = (String) datos.get(6);
+			Long lastSeen = (Long) datos.get(7);
+			String tweetId = (String) datos.get(8); // Si se necesita este dato
+			@SuppressWarnings("unchecked") // Cast sin comprobación, se asume que es seguro
+			ArrayList<String> friends = (ArrayList<String>) datos.get(9);
+
+			// Creación del usuario con los datos extraídos
+			UsuarioTwitter usuario = new UsuarioTwitter(id, screenName, tags, avatar, followersCount, friendsCount, lang, lastSeen, tweetId, friends);
+
+			// Intentar agregar el usuario al mapa por screenName en lugar de id
+			boolean agregado = GestionTwitter.agregarUsuarioPorScreenName(usuario);
+			if (agregado) {
+				System.out.println("Usuario agregado con nick: " + usuario.getScreenName());
+			}
+		} catch (ClassCastException e) {
+			System.err.println("Error de casting en la línea de datos: " + e.getMessage());
+		} catch (Exception e) {
+			System.err.println("Error procesando la línea de datos: " + e.getMessage());
+		}
+	}
+
+
 
 
 
