@@ -5,20 +5,20 @@ import java.util.ArrayList;
 /** Clase para proceso básico de ficheros csv
  * @author andoni.eguiluz @ ingenieria.deusto.es
  */
-public class CSV { 
-	
+public class CSV {
+
 	private static boolean LOG_CONSOLE_CSV = false;  // Log a consola de lo que se va leyendo en el CSV
 
 	/** Procesa un fichero csv
 	 * @param file	Fichero del csv
 	 * @throws IOException
 	 */
-	public static void processCSV( File file ) 
+	public static void processCSV( File file )
 	throws IOException // Error de I/O
 	{
 		processCSV( file.toURI().toURL() );
 	}
-	
+
 	/** Procesa un fichero csv
 	 * @param urlCompleta	URL del csv
 	 * @throws IOException
@@ -26,8 +26,8 @@ public class CSV {
 	 * @throws FileNotFoundException
 	 * @throws ConnectException
 	 */
-	public static void processCSV( URL url ) 
-	throws MalformedURLException,  // URL incorrecta 
+	public static void processCSV( URL url )
+	throws MalformedURLException,  // URL incorrecta
 	 IOException, // Error al abrir conexión
 	 UnknownHostException, // servidor web no existente
 	 FileNotFoundException, // En algunos servidores, acceso a p�gina inexistente
@@ -66,8 +66,8 @@ public class CSV {
 			}
 		}
 	}
-	
-		/** Procesa una línea de entrada de csv	
+
+		/** Procesa una línea de entrada de csv
 		 * @param input	Stream de entrada ya abierto
 		 * @param line	La línea YA LEÍDA desde input
 		 * @param numLine	Número de línea ya leída
@@ -119,7 +119,7 @@ public class CSV {
 								else if (lista!=null) {
 									ret.add( lista );
 									lista = null;
-								} else 
+								} else
 									ret.add( getDato( stringActual, lastString ) );
 								stringActual = "";
 								lastString = false;
@@ -131,7 +131,7 @@ public class CSV {
 									else if (lista!=null) {
 										ret.add( lista );
 										lista = null;
-									} else 
+									} else
 										ret.add( getDato( stringActual, lastString ) );
 									stringActual = "";
 									lastString = false;
@@ -180,7 +180,7 @@ public class CSV {
 				if (posCar+1<line.length()) return line.charAt( posCar + 1 );
 				else return Character.MIN_VALUE;
 			}
-			
+
 			// Devuelve el objeto que corresponde a un dato (por defecto String. Si es entero o doble válido, se devuelve ese tipo)
 			private static Object getDato( String valor, boolean esString ) {
 				if (esString) return valor;
@@ -195,17 +195,41 @@ public class CSV {
 				return valor;
 			}
 
-	
+
 	private static void procesaCabeceras( ArrayList<Object> cabs ) {
 		// TODO Cambiar este proceso si se quiere hacer algo con las cabeceras
 		System.err.println( cabs );  // Saca la cabecera por consola de error
 	}
 
 	private static int numLin = 0;
-	private static void procesaLineaDatos( ArrayList<Object> datos ) {
-		// TODO Cambiar este proceso si se quiere hacer algo con las cabeceras
+	private static void procesaLineaDatos(ArrayList<Object> datos) {
 		numLin++;
-		System.out.println( numLin + "\t" + datos );  // Saca la cabecera por consola de error
+		if (datos == null || datos.size() < 10) {
+			System.err.println("Datos insuficientes para crear un UsuarioTwitter");
+			return;
+		}
+
+		try {
+			String id = (String) datos.get(0);
+			String screenName = (String) datos.get(1);
+			ArrayList<String> tags = (ArrayList<String>) datos.get(2);
+			String avatar = (String) datos.get(3);
+			Long followersCount = (Long) datos.get(4);
+			Long friendsCount = (Long) datos.get(5);
+			String lang = (String) datos.get(6);
+			Long lastSeen = (Long) datos.get(7);
+			// El tweetId se ignora
+			ArrayList<String> friends = (ArrayList<String>) datos.get(9);
+
+			UsuarioTwitter usuario = new UsuarioTwitter(id, screenName, tags, avatar, followersCount, friendsCount, lang, lastSeen, "", friends);
+
+			System.out.println(usuario);
+
+		} catch (Exception e) {
+			System.err.println("Error procesando la línea de datos: " + e.getMessage());
+		}
+
 	}
+
 
 }
