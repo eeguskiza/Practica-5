@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class CSV {
 
 	private static boolean LOG_CONSOLE_CSV = false;  // Log a consola de lo que se va leyendo en el CSV
+	private static StringBuilder dataForTextArea = new StringBuilder();
 
 	/** Procesa un fichero csv
 	 * @param file	Fichero del csv
@@ -26,7 +27,11 @@ public class CSV {
 	 * @throws FileNotFoundException
 	 * @throws ConnectException
 	 */
-	public static void processCSV( URL url )
+
+	// Atributo estático para almacenar las líneas procesadas
+	private static ArrayList<String> processedLines = new ArrayList<>();
+
+	public static void processCSV( URL url)
 	throws MalformedURLException,  // URL incorrecta
 	 IOException, // Error al abrir conexión
 	 UnknownHostException, // servidor web no existente
@@ -200,6 +205,7 @@ public class CSV {
 	private static void procesaCabeceras( ArrayList<Object> cabs ) {
 		// TODO Cambiar este proceso si se quiere hacer algo con las cabeceras
 		System.err.println( cabs );  // Saca la cabecera por consola de error
+		processedLines.add(String.valueOf(cabs));
 	}
 
 	private static int numLin = 0;
@@ -230,7 +236,9 @@ public class CSV {
 			// Intentar agregar el usuario al mapa de la clase GestionTwitter
 			boolean agregado = GestionTwitter.agregarUsuarioSiNoExiste(usuario);
 			if (agregado) {
-				System.out.println("Usuario agregado con id: " + usuario.getId());
+				String info = "Usuario agregado con id: " + usuario.getId();
+				System.out.println(info);
+				processedLines.add(info);
 			}
 		} catch (ClassCastException e) {
 			System.err.println("Error de casting en la línea de datos: " + e.getMessage());
@@ -264,13 +272,23 @@ public class CSV {
 			// Intentar agregar el usuario al mapa por screenName en lugar de id
 			boolean agregado = GestionTwitter.agregarUsuarioPorScreenName(usuario);
 			if (agregado) {
-				System.out.println("Usuario agregado con nick: " + usuario.getScreenName());
+				String info = "Usuario agregado con nick: " + usuario.getScreenName();
+				System.out.println(info);
+				processedLines.add(info);
 			}
 		} catch (ClassCastException e) {
 			System.err.println("Error de casting en la línea de datos: " + e.getMessage());
 		} catch (Exception e) {
 			System.err.println("Error procesando la línea de datos: " + e.getMessage());
 		}
+	}
+
+	public static String getProcessedDataAsString() {
+		StringBuilder sb = new StringBuilder();
+		for (String line : processedLines) {
+			sb.append(line).append("\n"); // Añade cada línea y un salto de línea
+		}
+		return sb.toString();
 	}
 
 
